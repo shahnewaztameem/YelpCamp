@@ -2,8 +2,10 @@ var express   = require("express"),
   bodyParser  = require("body-parser"),
   mongoose    = require("mongoose"),
   Campground  = require('./models/campground'),
+  seedDB      = require('./seeds'),
   app         = express();
 
+seedDB();
 app.use(bodyParser.urlencoded({ extended: true }));
 app.set("view engine", "ejs");
 
@@ -13,11 +15,6 @@ mongoose.connect("mongodb://localhost/yelp_camp", {
   useUnifiedTopology: true
 });
 
-// Campgrounds.create({
-//   name: "Salmon Creek",
-//   image: "https://dailygazette.com/sites/default/files/styles/article_image/public/180702d.jpg?itok=6L_qDMLP",
-//   description: "This is a huge campground, no water, no bathrooms but a beautiful campground"
-// });
 
 app.get("/", (req, res) => {
   res.render("landing");
@@ -64,10 +61,11 @@ app.post("/campgrounds", (req, res) => {
 
 // SHOW - show more info about a specific campgrounds
 app.get("/campgrounds/:id", (req, res) => {
-  Campground.findById(req.params.id, function(error, foundCampground){
+  Campground.findById(req.params.id).populate('comments').exec(function(error, foundCampground){
     if(error) {
       console.log(error);
     } else {
+      console.log(foundCampground);
       // render the show template with that campground
       res.render("show", {campground: foundCampground});
     }
