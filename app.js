@@ -1,10 +1,18 @@
-var express   = require("express"),
-  bodyParser  = require("body-parser"),
-  mongoose    = require("mongoose"),
-  Campground  = require('./models/campground'),
-  Comment     = require('./models/comment'),
-  seedDB      = require('./seeds'),
-  app         = express();
+var express     = require("express"),
+  bodyParser    = require("body-parser"),
+  mongoose      = require("mongoose"),
+  passport      = require('passport'),
+  LocalStrategy = require('passport-local'),
+  Campground    = require('./models/campground'),
+  Comment       = require('./models/comment'),
+  seedDB        = require('./seeds'),
+  User          = require('./models/user'),
+  app           = express();
+
+// routes
+var campgroundRoutes = require('./routes/campgrounds'),
+    commentRoutes    = require('./routes/comments'),
+    indexRoutes      = require('./routes/index');
 
 seedDB();
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -16,103 +24,28 @@ mongoose.connect("mongodb://localhost/yelp_camp", {
   useUnifiedTopology: true
 });
 
-
-app.get("/", (req, res) => {
-  res.render("landing");
-});
-
-// INDEX - show all campgrounds
-app.get("/campgrounds", (req, res) => {
-  Campground.find({}, function (error, campgrounds) {
-    if (error) {
-      console.log(error);
-    } else {
-      res.render("campgrounds/index", {
-        campgrounds: campgrounds
-      });
-    }
-  });
-});
-
-// NEW - show form to create a new campground
-app.get("/campgrounds/new", (req, res) => {
-  res.render("campgrounds/new");
-});
-
-// CREATE - add a new campground to DV
-app.post("/campgrounds", (req, res) => {
-  //get data from form and add to the campgrounds array
-  var name = req.body.name;
-  var imageUrl = req.body.image;
-  var description = req.body.description;
-  var newCampground = {
-    name: name,
-    image: imageUrl,
-    description: description
-  };
-  Campground.create(newCampground, function (error, campgrounds) {
-    if (error) {
-      console.log(error);
-    } else {
-      //redirect back to the campgroundspage
-      res.redirect('/campgrounds');
-    }
-  });
-});
-
-// SHOW - show more info about a specific campgrounds
-app.get("/campgrounds/:id", (req, res) => {
-  Campground.findById(req.params.id).populate('comments').exec(function(error, foundCampground){
-    if(error) {
-      console.log(error);
-    } else {
-      console.log(foundCampground);
-      // render the show template with that campground
-      res.render("campgrounds/show", {campground: foundCampground});
-    }
-  });
-});
-
 // ======================
-// COMMENTS Routes
+// PASSPORT Configuration
 // ======================
-app.get('/campgrounds/:id/comments/new', (req, res) => {
-  // find campgroud by id
-  Campground.findById(req.params.id, (error, campground) => {
-    if(error) {
-      console.log(error);
-    }
-    else {
-      res.render("comments/new", {campground: campground});
-    }
-  });
-  
+app.use(require('express-session') ({
+  secret : "there is no place like 127.0.0.1",
+  resave : false,
+  saveUninitialized : false
+}));
+app.use((req, res, next) => {
+  res.locals.currentUser = req.user;
+  next();
 });
+app.use(passport.initialize());
+app.use(passport.session());
+passport.use(new LocalStrategy(User.authenticate()));
+passport.serializeUser(User.serializeUser());
+passport.deserializeUser(User.deserializeUser());
 
-app.post('/campgrounds/:id/comments' , (req, res) => {
-    // lookup campground using id
-    Campground.findById(req.params.id, (error, campground) => {
-      if(error) {
-        console.log(error);
-        res.redirect('/campgrounds');
-      }
-      else {
-        Comment.create(req.body.comment, (error, comment) => {
-          if(error) {
-            console.log(error);
-          }
-          else {
-            campground.comments.push(comment);
-            campground.save();
-            res.redirect('/campgrounds/'+campground._id);
-          }
-        });
-      }
-    });
-    // create a new comment
-    // connect a new comment to campground
-    // redirect to campgrounds showpage
-});
+
+app.use(indexRoutes);
+app.use('/campgrounds',campgroundRoutes);
+app.use('/campgrounds/:id/comments',commentRoutes);
 
 var port = process.env.PORT || 3000;
 app.listen(port, () => {
