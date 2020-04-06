@@ -22,35 +22,35 @@ var data = [{
 function seedDB() {
     // remove all campgrounds
     Campground.remove({}, function (error) {
-        if (error) {
-            console.log(error);
-        } else {
-            console.log("campgrounds removed");
-        }
-        // add few campgrounds
-        data.forEach(seed => {
-            Campground.create(seed, (error, campground) => {
-                if (error) {
-                    console.log(error);
-                } else {
-                    console.log("campground added");
+        // if (error) {
+        //     console.log(error);
+        // } else {
+        //     console.log("campgrounds removed");
+        // }
+        // // add few campgrounds
+        // data.forEach(seed => {
+        //     Campground.create(seed, (error, campground) => {
+        //         if (error) {
+        //             console.log(error);
+        //         } else {
+        //             console.log("campground added");
 
-                    // create a comment
-                    Comment.create({
-                        text: "This is a nice campground but I wish there was internet!!",
-                        author: "Tameem"
-                    }, (error, comment) => {
-                        if (error) throw error;
-                        else {
-                            campground.comments.push(comment);
-                            campground.save();
-                            console.log("comment added");
-                        }
+        //             // create a comment
+        //             Comment.create({
+        //                 text: "This is a nice campground but I wish there was internet!!",
+        //                 author: "Tameem"
+        //             }, (error, comment) => {
+        //                 if (error) throw error;
+        //                 else {
+        //                     campground.comments.push(comment);
+        //                     campground.save();
+        //                     console.log("comment added");
+        //                 }
 
-                    });
-                }
-            });
-        });
+        //             });
+        //         }
+        //     });
+        // });
     });
 
 
