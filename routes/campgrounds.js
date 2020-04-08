@@ -43,7 +43,7 @@ router.post("/", isLoggedIn, (req, res) => {
             console.log(error);
         } else {
             //redirect back to the campgrounds page
-            res.redirect('/campgrounds');
+            res.redirect('/campgrounds',{currentUser: req.user});
         }
     });
 });
@@ -57,7 +57,8 @@ router.get("/:id", (req, res) => {
             console.log(foundCampground);
             // render the show template with that campground
             res.render("campgrounds/show", {
-                campground: foundCampground
+                campground: foundCampground,
+                currentUser: req.user
             });
         }
     });
@@ -66,13 +67,13 @@ router.get("/:id", (req, res) => {
 // EDIT campground 
 router.get('/:id/edit', checkCampgroundOwnership, (req, res) => {
     Campground.findById(req.params.id, (error, foundCampground) => {
-        res.render('campgrounds/edit',{campground: foundCampground});
+        res.render('campgrounds/edit',{campground: foundCampground, currentUser: req.user});
             
     });
 });
 
 // UPDATE campground 
-router.put('/:id', (req, res) => {
+router.put('/:id', checkCampgroundOwnership, (req, res) => {
     Campground.findByIdAndUpdate(req.params.id, req.body.campground, (error, updatedCampground) => {
         if(error) {
             res.redirect('/campgrounds');
