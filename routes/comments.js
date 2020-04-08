@@ -48,6 +48,28 @@ router.post('/', isLoggedIn, (req, res) => {
     
 });
 
+// comments EDIT route
+router.get('/:comment_id/edit', (req, res) => {
+    Comment.findById(req.params.comment_id, (error, foundComment) => {
+        if(error) {
+            res.redirect('back');
+        } else {
+            res.render('comments/edit', {campground_id: req.params.id, comment: foundComment});
+        }
+    });
+});
+
+// comments UPDATE
+router.put('/:comment_id', (req, res) => {
+    Comment.findByIdAndUpdate(req.params.comment_id, req.body.comment, (error, updatedComment) => {
+        if(error) {
+            res.redirect('back');
+        } else {
+            res.redirect('/campgrounds/'+req.params.id);
+        }
+    });
+});
+
 
 // Login check Middleware
 function isLoggedIn(req, res, next) {
