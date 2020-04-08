@@ -70,6 +70,17 @@ router.put('/:comment_id', (req, res) => {
     });
 });
 
+// Comment DESTROY
+router.delete('/:comment_id', (req, res) => {
+    Comment.findByIdAndDelete(req.params.comment_id, (error) => {
+        if(error) {
+            res.redirect('back');
+        } else {
+            res.redirect('/campgrounds/'+req.params.id);
+        }
+    });
+});
+
 
 // Login check Middleware
 function isLoggedIn(req, res, next) {
