@@ -8,6 +8,7 @@ var middleware  = require('../middleware');
 router.get("/", (req, res) => {
     Campground.find({}, function (error, campgrounds) {
         if (error) {
+            req.flash('error', 'Campground not found');
             console.log(error);
         } else {
             res.render("campgrounds/index", {
@@ -68,6 +69,9 @@ router.get("/:id", (req, res) => {
 // EDIT campground 
 router.get('/:id/edit', middleware.checkCampgroundOwnership, (req, res) => {
     Campground.findById(req.params.id, (error, foundCampground) => {
+        if(error) {
+            req.flash('error', 'Campground not found');
+        }
         res.render('campgrounds/edit',{campground: foundCampground, currentUser: req.user});
             
     });
@@ -77,8 +81,10 @@ router.get('/:id/edit', middleware.checkCampgroundOwnership, (req, res) => {
 router.put('/:id', middleware.checkCampgroundOwnership, (req, res) => {
     Campground.findByIdAndUpdate(req.params.id, req.body.campground, (error, updatedCampground) => {
         if(error) {
+            req.flash('error', 'Campground not found');
             res.redirect('/campgrounds');
         } else {
+            req.flash('success', 'Campground updated');
             res.redirect('/campgrounds/'+req.params.id);
         }
     });
@@ -88,12 +94,14 @@ router.put('/:id', middleware.checkCampgroundOwnership, (req, res) => {
 router.delete('/:id', middleware.checkCampgroundOwnership, (req, res) => {
     Campground.findByIdAndRemove(req.params.id, (error, campgroundRemoved) => {
         if(error) {
+            req.flash('error', 'Campground not found');
             res.redirect('/campgrounds');
         } else {
             Comment.deleteMany( {_id: { $in: campgroundRemoved.comments } }, (err) => {
                 if (err) {
                     console.log(err);
                 }
+                req.flash('success', 'Campground successfully deleted!');
                 res.redirect("/campgrounds");
             });
         }

@@ -34,6 +34,7 @@ router.post('/', middleware.isLoggedIn, (req, res) => {
         } else {
             Comment.create(req.body.comment, (error, comment) => {
                 if (error) {
+                    req.flash('error','Something went wrong');
                     console.log(error);
                 } else {
                     // add username and id to comment
