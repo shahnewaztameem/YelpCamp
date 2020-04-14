@@ -24,11 +24,12 @@ router.get("/new", middleware.isLoggedIn, (req, res) => {
     res.render("campgrounds/new");
 });
 
-// CREATE - add a new campground to DV
+// CREATE - add a new campground to DB
 router.post("/", middleware.isLoggedIn, (req, res) => {
     //get data from form and add to the campgrounds array
     var name = req.body.name;
     var imageUrl = req.body.image;
+    var price   = req.body.price;
     var description = req.body.description;
     var author = {
         id: req.user._id,
@@ -36,6 +37,7 @@ router.post("/", middleware.isLoggedIn, (req, res) => {
     };
     var newCampground = {
         name: name,
+        price: price,
         image: imageUrl,
         description: description,
         author: author
