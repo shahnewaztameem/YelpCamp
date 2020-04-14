@@ -12,7 +12,7 @@ router.get("/", (req, res) => {
 
 // show register form
 router.get('/register', (req, res) => {
-    res.render('register');
+    res.render('register', {page: 'register'});
 });
 
 // signup logic
@@ -26,7 +26,7 @@ router.post('/register', (req, res) => {
             return res.redirect('/register');
         }
         passport.authenticate('local')(req, res, () => {
-            req.flash('success', 'Welcome '+ user.username)
+            req.flash('success', 'Successfully Signed Up! Welcome '+ user.username);
             res.redirect('/campgrounds')
         });
     });
@@ -34,7 +34,7 @@ router.post('/register', (req, res) => {
 
 // show login form
 router.get('/login', (req, res) => {
-    res.render('login');
+    res.render('login', {page: 'login'});
 });
 
 // login logic
