@@ -45,6 +45,7 @@ router.post("/", middleware.isLoggedIn, (req, res) => {
     };
     Campground.create(newCampground, function (error, campgrounds) {
         if (error) {
+            req.flash('error', 'Something went wrong! Try again');
             console.log(error);
         } else {
             //redirect back to the campgrounds page
@@ -58,6 +59,8 @@ router.get("/:id", (req, res) => {
     Campground.findById(req.params.id).populate('comments').exec(function (error, foundCampground) {
         if (error) {
             console.log(error);
+            req.flash('error', 'INVALID QUERY');
+            res.redirect("/campgrounds");
         } else {
             console.log(foundCampground);
             // render the show template with that campground
@@ -74,6 +77,7 @@ router.get('/:id/edit', middleware.checkCampgroundOwnership, (req, res) => {
     Campground.findById(req.params.id, (error, foundCampground) => {
         if(error) {
             req.flash('error', 'Campground not found');
+            res.redirect('/campgrounds');
         }
         res.render('campgrounds/edit',{campground: foundCampground, currentUser: req.user});
             
@@ -104,7 +108,7 @@ router.delete('/:id', middleware.checkCampgroundOwnership, (req, res) => {
                 if (err) {
                     console.log(err);
                 }
-                req.flash('success', 'Campground successfully deleted!');
+                req.flash('error', ' Campground successfully deleted!');
                 res.redirect("/campgrounds");
             });
         }
