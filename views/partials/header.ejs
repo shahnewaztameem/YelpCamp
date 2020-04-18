@@ -31,7 +31,19 @@
                     <li class="<%= typeof page !== 'undefined' && page === 'campgrounds' ? 'active' : '' %>"><a
                             href="/campgrounds">Home</a></li>
                 </ul>
+
                 <ul class="nav navbar-nav navbar-right">
+                    <li>
+                        <p>
+                            <form action="/campgrounds" method="GET" class="form-inline">
+                                <div class='form-group'>
+                                    <input type="text" name="search" placeholder="Search for a campground...."
+                                        class='form-control'>
+                                    <input type="submit" value="Search" class="btn btn-primary">
+                                </div>
+                            </form>
+                        </p>
+                    </li>
                     <% if(!currentUser){ %>
                     <li class="<%= typeof page !== 'undefined' && page === 'login' ? 'active' : '' %>"><a
                             href="/login">Login</a></li>
@@ -41,6 +53,7 @@
                     <li><a href="#">Signed In As <%= currentUser.username %></a></li>
                     <li><a href="/logout">Logout</a></li>
                     <% } %>
+
                 </ul>
             </div>
         </div>
