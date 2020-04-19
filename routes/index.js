@@ -6,7 +6,7 @@ var Campground  = require('../models/campground');
 var nodemailer  = require('nodemailer');
 var async       = require('async');
 var crypto      = require('crypto');
-require('dotenv').config()
+
 
 
 router.get("/", (req, res) => {
