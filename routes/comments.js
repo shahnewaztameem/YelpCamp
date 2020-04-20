@@ -58,10 +58,7 @@ router.get('/:comment_id/edit', middleware.checkCommentOwnership, (req, res) => 
         if (error) {
             res.redirect('back');
         } else {
-            res.render('comments/edit', {
-                campground_id: req.params.id,
-                comment: foundComment
-            });
+            res.render('comments/edit', {campground_slug: req.params.slug, comment: foundComment});
         }
     });
 });
