@@ -23,7 +23,7 @@ app.use(express.static(__dirname + '/public'));
 app.use(methodOverride('_method'));
 app.use(flash());
 //DB connection
-mongoose.connect(process.env.CONNECTION_URI || "mongodb://localhost/yelp_camp", {
+mongoose.connect(process.env.CONNECTION_URI, {
   useNewUrlParser: true,
   useUnifiedTopology: true
 });
